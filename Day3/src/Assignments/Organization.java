@@ -1,6 +1,8 @@
 package Assignments;
 
 public class Organization {
+	
+	public static Employee[] emps = new Employee[5];
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -20,8 +22,39 @@ public class Organization {
 		Employee e4 = new Employee("Emp4",add4,4,dev);
 		Employee e5 = new Employee("Emp5",add5,5,null);
 		
-		System.out.println(e1);
+		emps[0] = e1;
+		emps[1] = e2;
+		emps[2] = e3;
+		emps[3] = e4;
+		emps[4] = e5;
 		
+		printEmployees("Dev");
+		printDept(e1);
+		noDeptEmployees();
+		
+		
+	}
+	
+	public static void printEmployees(String d) {
+		
+		for(int i=0;i<5;i++) {
+			if(emps[i].getDept()!=null&&emps[i].getDept().getName().equals(d)) {
+				System.out.println(emps[i]);
+			}
+		}
+		
+	}
+	
+	public static void printDept(Employee e) {
+		System.out.println(e.getDept().getName());
+	}
+	
+	public static void noDeptEmployees() {
+		for(int i=0;i<5;i++) {
+			if(emps[i].getDept()==null) {
+				System.out.println(emps[i]);
+			}
+		}
 	}
 
 }

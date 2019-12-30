@@ -32,6 +32,7 @@ public class EmployeeList {
 				employeeList.add(new Employee(rs.getInt(1),rs.getString(2)+rs.getString(3),rs.getDouble(4),joinDate,rs.getInt(6)));
 			}
 			System.out.println("No of employees are: "+employeeList.size());
+			System.out.println(employeeList.get(0));
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

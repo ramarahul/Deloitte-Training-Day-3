@@ -1,3 +1,4 @@
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Employee {
@@ -59,7 +60,9 @@ public class Employee {
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", full_name=" + full_name + ", salary=" + salary + ", join_date=" + join_date
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		String jDate = sdf.format(join_date);
+		return "Employee [id=" + id + ", full_name=" + full_name + ", salary=" + salary + ", join_date=" + jDate
 				+ ", dept_id=" + dept_id + "]";
 	}
 	

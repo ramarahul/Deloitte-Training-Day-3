@@ -209,3 +209,119 @@ end;
 /
 
 select * from employees;
+
+declare
+cursor cur_chief is select * from employees;
+r_chief cur_chief%ROWTYPE;
+begin
+open cur_chief;
+loop
+fetch cur_chief into r_chief;
+exit when cur_chief%NOTFOUND;
+ exit when r_chief.employee_id>12;
+ dbms_output.put_line(r_chief.first_name||' '||r_chief.last_name);
+end loop;
+end;
+/
+
+DECLARE
+  TYPE t_name IS RECORD(
+     first_name employees.first_name%TYPE,
+     last_name  employees.last_name%TYPE
+  );
+  r_name   t_name; -- name record
+  n_emp_id employees.employee_id%TYPE := 200;
+BEGIN
+  SELECT first_name,
+         last_name
+  INTO r_name
+  FROM employees
+  WHERE employee_id = n_emp_id;
+  -- print out the employee's name
+  DBMS_OUTPUT.PUT_LINE(r_name.first_name || ',' || r_name.last_name );
+END;
+/
+
+declare 
+cursor cur_chief is select u.name,r.role_name from users u join roles r on u.role_id=r.role_id;
+type t_users is record(
+user_name users.name%TYPE,
+role_name roles.role_name%TYPE
+);
+r_users t_users;
+begin
+open cur_chief;
+loop
+fetch cur_chief into r_users;
+exit when cur_chief%NOTFOUND;
+dbms_output.put_line(r_users.user_name||' - '||r_users.role_name);
+end loop;
+end;
+/
+
+DECLARE
+  TYPE t_name IS RECORD(
+    first_name employees.first_name%TYPE,
+    last_name employees.last_name%TYPE
+  );
+  r_name      t_name;
+  r_name2     t_name;
+  r_name_null t_name;
+  n_emp_id employees.employee_id%TYPE := 200;
+BEGIN
+  -- assign employee's infomation to record
+  SELECT first_name,
+         last_name
+  INTO r_name
+  FROM employees
+  WHERE employee_id = n_emp_id;
+ 
+  -- assign record to another record
+  r_name2 := r_name;
+  -- print out the employee's name
+  DBMS_OUTPUT.PUT_LINE(r_name2.first_name || ',' || r_name2.last_name);
+ 
+  -- assign record to NULL
+  r_name2 := r_name_null; 
+ 
+  -- check NULL for each individual field
+  IF r_name2.first_name IS NULL AND
+     r_name2.last_name IS NULL THEN
+    DBMS_OUTPUT.PUT_LINE('Record r_name2 is NULL');
+  END IF;
+ 
+END;
+/
+
+declare
+type t_emps is record(
+emp_name employees.first_name%TYPE,
+emp_id employees.employee_id%TYPE,
+salary employees.salary%TYPE
+);
+
+type t_dept is record(
+dept_id departments.department_id%TYPE,
+location_id departments.location_id%TYPE
+);
+
+type t_comp is record(
+r_emps t_emps,
+r_dept t_dept,
+location_name locations.city%TYPE
+);
+
+
+
+cursor cur_chief is select e.first_name,e.employee_id,e.salary,e.department_id,c.location_id,c.city  from employees e join (select d.department_id,d.location_id,l.city from departments d join locations l on d.location_id=l.location_id ) c on e.department_id=c.department_id;
+r_comp t_comp;
+begin
+open cur_chief;
+loop
+fetch cur_chief into r_comp.r_emps.emp_name,r_comp.r_emps.emp_id,r_comp.r_emps.salary,r_comp.r_dept.dept_id,r_comp.r_dept.location_id,r_comp.location_name;
+exit when cur_chief%NOTFOUND;
+dbms_output.put_line(r_comp.r_emps.emp_name||r_comp.r_emps.emp_id||r_comp.r_emps.salary||r_comp.r_dept.dept_id||r_comp.r_dept.location_id||r_comp.location_name);
+end loop;
+
+end;
+/

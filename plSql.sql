@@ -528,6 +528,35 @@ dbms_output.put_line(INCREMENTSAL(182,10));
 end;
 /
 
+create or replace
+procedure giveNumberOfBooks(auth_name author.name%TYPE,books_no out int) is
+begin
+select count(*) into books_no from book group by author_name having author_name=auth_name ;
+end;
+/
+
+insert into publisher values('Publisher 1','Hyderabad');
+insert into publisher values('Publisher 2','Bangalore');
+insert into publisher values('Publisher 3','Chennai');
+insert into publisher values('Publisher 4','Mumbai');
+
+delete from publisher;
+
+select * from publisher;
+
+insert into book values(1,'Title1',58,2001,'short stories','Arthur Conan Doyle','Publisher 1');
+insert into book values(2,'Title2',45,2020,'short stories','Arthur Conan Doyle','Publisher 2');
+insert into book values(3,'Title3',354,2012,'short stories','Arthur Conan Doyle','Publisher 3');
+insert into book values(4,'Title4',234,2010,'novellas','Scott Fitzgerald','Publisher 4');
+insert into book values(5,'Title5',57,2009,'novellas','Scott Fitzgerald','Publisher 1');
+insert into book values(6,'Title6',435,2006,'novels','Scott Fitzgerald','Publisher 2');
+insert into book values(7,'Title7',35,2005,'novels','Scott Fitzgerald','Publisher 3');
+insert into book values(8,'Title8',123,2001,'poems','J.K Rowling','Publisher 4');
+insert into book values(9,'Title9',78,2002,'poems','J.K Rowling','Publisher 1');
+insert into book values(10,'Title10',97,2004,'short stories','J.K Rowling','Publisher 2');
+
+select * from book;
+commit;
 
 
 

@@ -286,4 +286,10 @@ BEGIN
     dbms_output.put_line('Salary:' || n_salary);
   END IF;
 END;
+/
+insert into author values('Arthur Conan Doyle','Britain');
+insert into author values('Scott Fitzgerald','American');
+insert into author values('J.K Rowling','Britain');
 
+select * from author;
+commit;

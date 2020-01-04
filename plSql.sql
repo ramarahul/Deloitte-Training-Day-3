@@ -325,3 +325,209 @@ end loop;
 
 end;
 /
+
+declare
+password_too_short EXCEPTION;
+PRAGMA exception_init(password_too_short, -20001);
+user_password users.password%TYPE:='&password';
+u_name users.username%TYPE;
+begin
+if length(user_password)<8 then
+--RAISE password_too_short;
+raise_application_error(-20001,'Password is too short');
+else
+select username into u_name from users where password=user_password;
+dbms_output.put_line('Username: '||u_name||' Password: '||user_password);
+end if;
+exception 
+when password_too_short then
+dbms_output.put_line('The password is too short');
+when too_many_rows then
+dbms_output.put_line('The database returns more than one user');
+when no_data_found then
+dbms_output.put_line('User with password '||user_password||' does not exist');
+end;
+/
+
+declare
+u_name users.name%type;
+u_id users.user_id%type:=&UserId;
+begin
+
+select name into u_name from users where user_id<=u_id;
+dbms_output.put_line('customer name is '||u_name);
+exception
+
+when too_many_rows then
+dbms_output.put_line('The database returns more than one user');
+when no_data_found then
+dbms_output.put_line('Customer '||u_id||' does not exist');
+
+end;
+/
+
+declare 
+salary_too_high exception;
+pragma exception_init(salary_too_high,-20003);
+l_emp_id employees.salary%TYPE:=&emp_id;
+l_salary employees.salary%TYPE:=&salary;
+l_max_sal employees.salary%TYPE;
+l_min_sal employees.salary%TYPE;
+begin
+select MAX(salary),MIN(salary) into l_max_sal,l_min_sal from employees group by job_id having job_id=(select job_id from employees where employee_id=l_emp_id);
+
+if l_salary>l_max_sal or l_salary<l_min_sal then
+dbms_output.put_line('Given salary is '||l_salary||', max is '||l_max_sal||', min is '||l_min_sal);
+raise salary_too_high;
+else
+update employees set salary=l_salary where employee_id=l_emp_id;
+dbms_output.put_line('Salary updated');
+end if;
+exception
+when salary_too_high then
+dbms_output.put_line('The salary given is not in the range for the Job ID');
+
+end;
+/
+
+select * from employees;
+select max(salary),min(salary),job_id from employees group by job_id;
+
+create or replace
+procedure hello is
+begin
+dbms_output.put_line('Hello World');
+end;
+/
+
+begin
+hello();
+end;
+/
+call hello();
+
+create or replace 
+procedure dispn(n int) is
+begin
+dbms_output.put_line(n||' square is : '||n*n);
+end;
+/
+call dispn(4);
+
+declare
+n int:=&num;
+begin
+dispn(n);
+end;
+/
+
+create or replace
+procedure giveDetails(emp_id employees.employee_id%TYPE) is
+emp_name employees.first_name%TYPE;
+emp_sal employees.salary%TYPE;
+begin
+select first_name,salary into emp_name,emp_sal from employees where employee_id = emp_id;
+dbms_output.put_line(emp_name|| q'['s salary is ]'||emp_sal);
+end;
+/
+
+declare
+emp_id employees.employee_id%TYPE:=&id;
+begin
+giveDetails(emp_id);
+end;
+/
+
+create or replace 
+procedure sum_ab(a int,b int,c out int) is
+begin
+c:=a+b;
+end;
+/
+
+declare
+r int;
+begin
+sum_ab(23,29,r);
+dbms_output.put_line('sum is:' || r);
+end;
+/
+
+create or replace
+procedure giveName(emp_id employees.employee_id%TYPE,emp_name out employees.first_name%TYPE) is
+begin
+select first_name into emp_name from employees where employee_id = emp_id;
+end;
+/
+
+create or replace
+procedure giveSal(emp_name employees.first_name%TYPE,emp_sal out employees.salary%TYPE) is
+begin
+select salary into emp_sal from employees where first_name = emp_name;
+end;
+/
+
+declare
+emp_name employees.first_name%TYPE:='&name';
+emp_sal employees.salary%TYPE;
+begin
+giveSal(emp_name,emp_sal);
+dbms_output.put_line(emp_sal);
+end;
+/
+
+declare
+emp_name employees.first_name%TYPE;
+emp_id employees.employee_id%TYPE:=&id;
+begin
+giveName(emp_id,emp_name);
+dbms_output.put_line(emp_name);
+end;
+/
+
+create or replace
+function ADD_TWO(a int,b int) return int is
+begin
+return (A+B);
+end;
+/
+
+declare 
+begin
+dbms_output.put_line(ADD_TWO(2,3));
+end;
+/
+
+create or replace
+function incrementSal(emp_id employees.employee_id%TYPE,x int) return employees.salary%TYPE is
+l_sal employees.salary%TYPE;
+begin
+select salary into l_sal from employees where employee_id=emp_id;
+return l_sal+(l_sal*x/100);
+end;
+/
+
+create or replace
+function returnSum return employees.salary%TYPE is
+l_sum employees.salary%TYPE;
+begin
+select SUM(salary) into l_sum from employees;
+return l_sum;
+end;
+/
+
+declare 
+begin
+dbms_output.put_line(returnSum());
+end;
+/
+
+declare 
+begin
+dbms_output.put_line(INCREMENTSAL(182,10));
+end;
+/
+
+
+
+

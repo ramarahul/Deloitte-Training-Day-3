@@ -184,4 +184,106 @@ comment on table employees is 'Employee Information';
 
 select * from USER_TAB_COMMENTS;
 
+create trigger NameChange
+before update of first_name,last_name on employees
+for each row
+declare
+begin
+dbms_output.put_line('Employee names updated');
+end;
+/
+
+create table audits (
+    audit_id NUMBER PRIMARY KEY,
+    table_name VARCHAR2(255),
+    transaction_name VARCHAR2(10),
+    by_user VARCHAR2(30),
+    transaction_date DATE
+);
+
+create or replace trigger users_audit_trg
+after 
+update or delete
+on  users 
+for each row
+declare
+l_transaction VARCHAR2(10);
+begin
+l_transaction:=CASE
+when updating then 'UPDATE'
+when deleting then 'DELETE'
+end;
+insert into audits(audit_id,table_name,transaction_name,by_user,transaction_date) values(ROLE_ROLE_ID_SEQ3.nextval,'USERS',l_transaction,USER,sysdate);
+end;
+/
+select * from users;
+update users set username='qwertyuiop' where user_id=1003;
+update users set username='kamalp' where user_id=1003;
+delete from users where user_id=1003;
+select * from audits;
+rollback;
+
+CREATE OR REPLACE PACKAGE personnel AS
+  -- get employee's fullname
+  FUNCTION get_fullname(n_emp_id NUMBER)
+    RETURN VARCHAR2;
+  -- get employee's salary
+  FUNCTION get_salary(n_emp_id NUMBER)
+    RETURN NUMBER;
+END personnel;
+
+CREATE OR REPLACE PACKAGE BODY personnel AS
+  -- get employee's fullname
+  FUNCTION get_fullname(n_emp_id NUMBER) RETURN VARCHAR2 IS
+      v_fullname VARCHAR2(46);
+  BEGIN
+    SELECT first_name || ',' ||  last_name
+    INTO v_fullname
+    FROM employees
+    WHERE employee_id = n_emp_id;
+ 
+    RETURN v_fullname;
+ 
+  EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RETURN NULL;
+  WHEN TOO_MANY_ROWS THEN
+    RETURN NULL;
+  END; -- end get_fullname
+ 
+  -- get salary
+  FUNCTION get_salary(n_emp_id NUMBER) RETURN NUMBER IS
+    n_salary NUMBER(8,2);
+  BEGIN
+    SELECT salary
+    INTO n_salary
+    FROM employees
+    WHERE employee_id = n_emp_id;
+ 
+    RETURN n_salary;
+ 
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        RETURN NULL;
+      WHEN TOO_MANY_ROWS THEN
+        RETURN NULL;
+  END;
+END personnel;
+
+DECLARE
+  n_salary NUMBER(8,2);
+  v_name   VARCHAR2(46);
+  n_emp_id NUMBER := &emp_id;
+BEGIN
+ 
+  v_name   := personnel.get_fullname(n_emp_id);
+  n_salary := personnel.get_salary(n_emp_id);
+ 
+  IF v_name  IS NOT NULL AND
+    n_salary IS NOT NULL
+  THEN
+    dbms_output.put_line('Employee: ' || v_name);
+    dbms_output.put_line('Salary:' || n_salary);
+  END IF;
+END;
 

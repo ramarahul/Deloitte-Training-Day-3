@@ -37,7 +37,7 @@ public class DAO {
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Could not call statement "+e.getMessage());
 		}
 		
 	}
